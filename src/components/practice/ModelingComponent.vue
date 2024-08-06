@@ -35,6 +35,9 @@ export default {
             return this.count * 2;
         }
     },
+    created(){
+        alert("CREATED함수 호출")
+    },
     methods: {
         showValue() {
             alert(this.value2);

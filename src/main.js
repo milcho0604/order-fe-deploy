@@ -27,6 +27,26 @@ axios.interceptors.request.use(
 )
 // 401응답을 받을 경우에 interceptor를 통해 전역적으로 rt를 통한 at 재발급
 // 만약 rt도 401 응답을 받을 경우에 token 제거 후 login화면으로 리다이렉트
+axios.interceptors.response.use(
+    response => response,
+    async error => {
+        if(error.response && error.response.status === 401){
+            const refreshToken = localStorage.getItem('refreshToken');
+            try{
+                localStorage.removeItem('token');
+                const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/member/refresh-token`, {refreshToken});
+                localStorage.setItem('token', response.data.result.token)
+                window.location.reload();    
+            }catch(e){
+                localStorage.clear();
+                window.location.href ='/login';
+            }            
+        }
+        return Promise.reject(error);
+    }
+
+)
+
 
 app.use(router);
 app.use(vuetify);

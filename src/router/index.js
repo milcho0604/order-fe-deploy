@@ -2,18 +2,22 @@
 // 파일 내부에 export default 있는 경우에는 {} 필요없고, 그렇지 않으면 {} 필요
 // import하는 요소가 여러개 있을때에도 {}를 붙인다
 import { createRouter, createWebHistory } from "vue-router"
-import HomeComponent from "@/components/HomeComponent.vue";
+// import HomeComponent from "@/components/HomeComponent.vue";
 
 
 import { practiceRouter } from "./practiceRouter";
 import { memberRouter } from "./memberRouter";
-const routes = [{
-    path: '/',
-    name: 'HomeComponent',
-    component: HomeComponent,
-},
+import { productRouter } from "./productRouter";
+
+const routes = [
+    // {
+//     path: '/',
+//     name: 'HomeComponent',
+//     component: HomeComponent,
+// },
 ...practiceRouter,
-...memberRouter
+...memberRouter,
+...productRouter
 
 ]
 

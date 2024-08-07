@@ -17,5 +17,6 @@ export const memberRouter = [
         path: '/member/list',
         name: "MemberList",
         component: MemberList
-    }
+    },
+    
 ]

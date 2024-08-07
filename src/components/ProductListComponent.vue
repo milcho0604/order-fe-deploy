@@ -60,7 +60,7 @@
                                     </td>
                                     <td>{{p.name}}</td>
                                     <td>{{p.price}}</td>
-                                    <td>{{p.stockQuantity}}</td>
+                                    <td>{{p.stock_quantity}}</td>
                                     <td></td>
                                     <td></td>
                                     <td v-if="isAdmin">
@@ -90,28 +90,69 @@ export default {
                 {text: "카테고리", value: 'category'},
             ],
             searchValue: "",
-            productList:[]
+            productList:[],
+            pageSize: 5,
+            currentPage:0,
+            isLastPage: false,
+            isLoading: false,
         };
     },
     created(){
         this.loadProduct();
+        window.addEventListener('scroll', this.scrollPagination);
     },
     methods: {
-        searchProducts(){
-
-        },
         deleteProduct(productId){
             console.log(productId)
         },
+        searchProducts(){
+            this.productList = [];
+            this.currentPage = 0;
+            this.isLastPage = false;
+            this.isLoading = false;
+            this.loadProduct();
+        },
         async loadProduct(){
             try{
-                const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/product/list`);
-            this.productList = response.data.result.content;
-            console.log(response.data)
+                // Pageable 객체에 맞게 파라미터 형식으로 데이터를 전송해줘야함
+                // 방법 1 : {params: {page:10, size:2}}와 같은 형식으로 전송시 parameter 형식으로 변환되어 서버로 전송
+                // 방법 2 : FormData 객체 생성하여 서버로 데이터 전송 
+                if(this.isLoading || this.isLastPage) return;
+                this.isLoading = true;
+                let params ={
+                    size: this.pageSize,
+                    page: this.currentPage,
+                }
+                // params = {size:5, page:0, category:"fruits"} 또는 {size:5, page:0, name:"apple"}
+                if(this.searchType == 'name'){
+                    params.searchName = this.searchValue
+                }else if(this.searchType === 'category'){
+                    params.category = this.searchValue
+                }
+                // localhost:8080/product/list?category=fruits&size=5&page0
+                // localhost:8080/product/list?name=apples&size=5&page0
+            const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/product/list`, {params});
+            const additionalData = response.data.result.content;
+            if(additionalData.length == 0){
+                this.isLastPage = true;
+                return;
+            }
+            this.productList = [...this.productList, ...additionalData]
+            this.currentPage++;
+            this.isLoading = false;
             }catch(e){
                 console.log(e);
+            }
+        },
+        scrollPagination(){
+            // 현재화면 + 스크롤을 이동한 화면 > 전체화면 - n의 조건이 성립되면 추가 데이터 로드
+            const isBottom = window.innerHeight+window.scrollY >= document.body.offsetHeight - 100;
+            if(isBottom && !this.isLastPage && !this.isLoading){
+                this.loadProduct();
             }
         }
     }
 };
 </script>
+
+

@@ -8,7 +8,6 @@
                         <v-data-table 
                         :headers="tableHeaders" 
                         :items="memberList">
-
                         </v-data-table>
                     </v-card-text>
                 </v-card>

@@ -30,7 +30,7 @@
             </v-col>
             <v-col cols="auto" v-if="!isAdmin">
                 <v-btn color="secondary" class="mr-2">장바구니</v-btn>
-                <v-btn color="success">주문하기</v-btn>
+                <v-btn @click="createOrder" color="success">주문하기</v-btn>
             </v-col>
             <v-col cols="auto" v-if="isAdmin">
                 <v-btn href="/product/create" color="success">상품등록</v-btn>
@@ -61,8 +61,17 @@
                                     <td>{{p.name}}</td>
                                     <td>{{p.price}}</td>
                                     <td>{{p.stock_quantity}}</td>
-                                    <td></td>
-                                    <td></td>
+                                    <td>
+                                        <v-text-field
+                                        v-model.number="p.quantity"
+                                        type="number"
+                                        style="width:70px"
+                                        >
+                                        </v-text-field>
+                                    </td>
+                                    <td class="text-center" v-if="!isAdmin">
+                                        <input type="checkbox" v-model="selected[p.id]">
+                                    </td>
                                     <td v-if="isAdmin">
                                         <v-btn color="secondary" @click="deleteProduct(p.id)">삭제</v-btn>
                                     </td>
@@ -95,11 +104,21 @@ export default {
             currentPage:0,
             isLastPage: false,
             isLoading: false,
+            // selected 예시 
+            // 1. true : 1번 상품선택시
+            // 2. false : 2번 상품선택 X
+            // 3. false : 3번 상품선택 X
+            // 4. true : 4번 상품선택시
+            // {1: true, 2:false, 3:false, 4:true } 이런식으로 담기게 된다.
+            selected: {}
         };
     },
     created(){
         this.loadProduct();
         window.addEventListener('scroll', this.scrollPagination);
+    },
+    beforeUnmount(){
+        window.removeEventListener('scroll', this.scrollPagination);
     },
     methods: {
         deleteProduct(productId){
@@ -132,7 +151,7 @@ export default {
                 // localhost:8080/product/list?category=fruits&size=5&page0
                 // localhost:8080/product/list?name=apples&size=5&page0
             const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/product/list`, {params});
-            const additionalData = response.data.result.content;
+            const additionalData = response.data.result.content.map(p => ({...p, quantity:0}));
             if(additionalData.length == 0){
                 this.isLastPage = true;
                 return;
@@ -150,7 +169,32 @@ export default {
             if(isBottom && !this.isLastPage && !this.isLoading){
                 this.loadProduct();
             }
+        },
+        async createOrder(){
+        const orderProducts = Object.keys(this.selected).filter(key=>this.selected[key])
+        .map(key=>{
+            const product = this.productList.find(p=>p.id == key)
+            return {productId: product.id, productCount: product.quantity};
+        });
+        console.log(orderProducts);
+        if(orderProducts.length < 1){
+            alert("주문 물품 수량이 부족합니다.")
+            return;
         }
+        const yesOrNo = confirm(`${orderProducts.length}개의 상품을 주문하시겠습니가?`);
+        if(!yesOrNo){
+            console.log("주문이 취소되었습니다.")
+            return;
+        }
+        try{
+            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/order/create`, orderProducts);
+            alert("주문이 정상적으로 처리되었습니다.")
+            window.location.reload();
+        }catch(e){
+            console.log(e);
+            alert("주문이 처리되지 않았습니다.")
+        }
+    }
     }
 };
 </script>

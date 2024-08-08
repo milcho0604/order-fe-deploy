@@ -1,13 +1,14 @@
 function initState(){
     return{
-        count:0
+        count:0,
+        message: "good"
     }
 }
 
 
 const practice ={
     // state : 상태를 의미하는 객체로서 initStore를 통해 상태 초기화
-    state: initState,
+    state: initState, 
 
     // mutations : 상태(변수)를 변경하기 위한 함수들의 집합
     // mutations은 컴포넌트에서 직접 호출되기 보다는, actions를 통해 mutation이 호출된다.
@@ -15,6 +16,9 @@ const practice ={
     mutations:{
         increment(state){
             state.count++;
+        },
+        update(state, newMessage){
+            state.message = newMessage;
         }
     },
     actions:{
@@ -22,12 +26,16 @@ const practice ={
         // 그러면 결국, 컴포넌트에서는 actions의 함수를 호출
         incrementCount(context){
             context.commit('increment')
+        },
+        updateMessage(context, newMessage){
+            context.commit('update', newMessage)
         }
     },
     // 상태를 get하기 위한 함수들의 집합
     getters:{
-        getCount: state => state.count
-    }
+        getCount: state => state.count,
+        getMessage: state => state.message
+    },
 }
 
 export default practice;

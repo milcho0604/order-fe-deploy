@@ -29,7 +29,7 @@
                 </v-form>
             </v-col>
             <v-col cols="auto" v-if="!isAdmin">
-                <v-btn color="secondary" class="mr-2">장바구니</v-btn>
+                <v-btn @click="addCart" color="secondary" class="mr-2">장바구니</v-btn>
                 <v-btn @click="createOrder" color="success">주문하기</v-btn>
             </v-col>
             <v-col cols="auto" v-if="isAdmin">
@@ -87,6 +87,7 @@
 </template>
 <script>
 import axios from 'axios';
+import { mapGetters } from 'vuex';
 
 export default {
     props: ['isAdmin', 'pageTitle'],
@@ -171,6 +172,19 @@ export default {
                 this.loadProduct();
             }
         },
+
+        addCart(){
+            const orderProducts = Object.keys(this.selected).filter(key=>this.selected[key])
+                .map(key=>{
+                const product = this.productList.find(p => p.id == key)
+                return {id: product.id, name: product.name, quantity: product.quantity};
+                });
+            orderProducts.forEach(p=>this.$store.dispatch('addCart', p))
+            console.log(this.getProductsInCart);
+            // window.location.reload();
+        },
+
+
         async createOrder(){
         const orderProducts = Object.keys(this.selected).filter(key=>this.selected[key])
         .map(key=>{
@@ -178,6 +192,7 @@ export default {
             return {productId: product.id, productCount: product.quantity};
         });
         console.log(orderProducts);
+
         if(orderProducts.length < 1){
             alert("주문 물품 수량이 부족합니다.")
             return;
@@ -196,7 +211,10 @@ export default {
             alert("주문이 처리되지 않았습니다.")
         }
     }
-    }
+    },
+    computed:{
+        ...mapGetters(['getProductsInCart'])
+    },
 };
 </script>
 

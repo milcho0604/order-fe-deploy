@@ -34,7 +34,6 @@ import OrederListComponent from '@/components/OrederListComponent.vue';
 export default{
     components:{
         OrederListComponent
-
     },
     data(){
         return {
@@ -43,7 +42,7 @@ export default{
         }
     },
     async created(){
-        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member/myinfo`);
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/member/myInfo`);
         this.memberInfo = response.data.result;
         this.memberInfoList = [
             {key:"이름", value:this.memberInfo.name},

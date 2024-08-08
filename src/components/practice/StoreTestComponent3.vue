@@ -1,16 +1,17 @@
 <template>
     <h1>store test component3</h1>
 
-    <p>count: {{count}}</p>
+    <p>count: {{getCount}}</p>
+    <p>message: {{getMessage}}</p>
 
 </template>
 
 <script>
+
+import { mapGetters } from 'vuex';
 export default{
-    data() {
-        return {
-            count:0
-        }
+    computed:{
+        ...mapGetters(['getCount', 'getMessage'])
     },
 }
 </script>

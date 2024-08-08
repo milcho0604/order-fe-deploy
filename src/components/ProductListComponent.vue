@@ -123,6 +123,7 @@ export default {
     methods: {
         deleteProduct(productId){
             console.log(productId)
+            window.location.reload();
         },
         searchProducts(){
             this.productList = [];

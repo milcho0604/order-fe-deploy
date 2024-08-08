@@ -38,6 +38,7 @@
                             required
                             >
                             </v-file-input>
+                            <v-btn type="submit" color="primary" block>등록</v-btn>
                         </v-form>
                     </v-card-text>
                 </v-card>
@@ -46,6 +47,8 @@
     </v-container>
 </template>
 <script>
+import axios from 'axios';
+
     export default{
         data(){
             return{
@@ -53,11 +56,24 @@
                 category: "",
                 price: null,
                 stock_quantity: null,
+                productImage: null
             }
         },
         methods:{
-            productCreate(){
-
+            async productCreate(){
+                try{
+                    let registerData = new FormData();
+                    registerData.append("name", this.name);
+                    registerData.append("category", this.category);
+                    registerData.append("price", this.price);
+                    registerData.append("stock_quantity", this.stock_quantity);
+                    registerData.append("productImage", this.productImage);
+                    await axios.post(`${process.env.VUE_APP_API_BASE_URL}/product/aws/create`, registerData);
+                    this.$router.push("/product/manage")
+                }catch(e){
+                    console.log(e)
+                    alert("상품등록에 실패했습니다.")
+                }
             },
             fileUpdate(event){
                 this.productImage = event.target.files[0];

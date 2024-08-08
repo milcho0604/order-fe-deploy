@@ -27,7 +27,9 @@
 </template>
 
 <script>
+import { EventSourcePolyfill } from 'event-source-polyfill';
 import { mapGetters } from 'vuex';
+// 서버와 실시간 알림 서비스를 위한 의존성 추가
 
 
 export default {
@@ -46,6 +48,14 @@ export default {
         this.isLogin = true;
         this.userRole = localStorage.getItem('role');
     }
+    // sse 연결을 위한 코드
+    if(this.userRole === 'ADMIN'){
+      let sse = new EventSourcePolyfill(`${process.env.VUE_APP_API_BASE_URL}/subscribe`, 
+      {headers: {Authorization: `Bearer ${token}`}}
+    );
+      sse.addEventListener('connect', (event) => { console.log(event) })
+    }
+
   },
   methods:{
     doLogout(){

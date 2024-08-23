@@ -1,6 +1,6 @@
 name: deploy to aws s3
 
-# main브랜치에 push될때 현재 스크립트 실행 trigger 발동 
+# main브랜치에 push될때 현재 스크립트 실행 trigger 발동! 
 on:
   push:
     branches:

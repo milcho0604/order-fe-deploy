@@ -24,7 +24,7 @@ jobs:
 
       - name: npm install
         working-directory: .
-        # run은 직접 사용하고자 하는 명령어
+        # run은 직접 사용하고자 하는 명령어 !
         run: npm install
 
       - name: npm build
